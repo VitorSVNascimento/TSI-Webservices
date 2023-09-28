@@ -12,20 +12,31 @@ btn.addEventListener('click', search);
 
 function search(){
     div_responses.innerHTML = ''
+
     const rua = document.querySelector('#rua');
     const cidade = document.querySelector('#cidade');
     const estado = document.querySelector('#estado');
-    req = new XMLHttpRequest();
-    req.onloadend = function(){
-        resp = req.responseText;
-        resp_obj = JSON.parse(resp);
-        
-        create_cep_table(resp_obj)
-        
-        
+
+    try {
+        const req = new XMLHttpRequest();
+        req.onloadend = function () {
+            if (req.status === 200) {
+                const resp = req.responseText;
+                const resp_obj = JSON.parse(resp);
+                create_cep_table(resp_obj);
+            } else {
+                handleError("Falha ao fazer requisição: " + req.status);
+            }
+        };
+        req.onerror = function () {
+            handleError("Falha ao fazer a requisição");
+        };
+        req.open('GET', 'https://viacep.com.br/ws/' + estado.value + '/' + cidade.value + '/' + rua.value + '/json/');
+        req.send(null);
+    } catch (error) {
+        handleError("Ocorreu um erro: " + error.message);
     }
-       req.open('GET', 'https://viacep.com.br/ws/'+estado.value+'/'+cidade.value+'/'+rua.value+'/json/');
-       req.send(null);
+
 
 
 }
@@ -72,4 +83,11 @@ function create_cep_table(resp_obj) {
         num++;
     }
     div_responses.appendChild(table);
+}
+
+function handleError(errorMessage) {
+    const errorDiv = document.createElement('div');
+    errorDiv.textContent = errorMessage;
+    errorDiv.style.color = 'red';
+    div_responses.appendChild(errorDiv);
 }
