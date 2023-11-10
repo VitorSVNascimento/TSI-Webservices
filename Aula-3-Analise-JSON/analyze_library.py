@@ -1,8 +1,8 @@
-from library_json import LIBRARY,QUESTIONS
+from library_json import LIBRARY, QUESTIONS
 import json
 from typing import Dict
-from functools import reduce
 from collections import defaultdict
+
 
 def get_books(library, category='any'):
     all = []
@@ -14,7 +14,8 @@ def get_books(library, category='any'):
     else:
         if category in library['livros']:
             return library['livros'][category]
-        return []  
+        return []
+
 
 def author_with_most_borrowed_books(all_books):
     author_borrowed_count = defaultdict(int)
@@ -32,6 +33,7 @@ def author_with_most_borrowed_books(all_books):
     else:
         return 'Nenhum livro emprestado encontrado.'
 
+
 def book_with_most_copies(all_books):
     if not all_books:
         return 'Nenhum livro encontrado.'
@@ -40,6 +42,7 @@ def book_with_most_copies(all_books):
     max_copies_book = max(all_books, key=lambda x: x.get('copias', 0))
 
     return max_copies_book.get('titulo', 'Título Desconhecido')
+
 
 def author_and_books_list(all_books):
     author_books_dict = {}
@@ -60,13 +63,16 @@ def author_and_books_list(all_books):
 
     return formatted_string.strip()
 
+
 def category_with_most_books(library_data):
     categories = library_data.get('livros', {})
     if not categories:
         return 'Nenhuma categoria encontrada.'
 
-    max_category_count = max(len(category_books) for category_books in categories.values())
-    most_categories = [category for category, category_books in categories.items() if len(category_books) == max_category_count]
+    max_category_count = max(len(category_books)
+                             for category_books in categories.values())
+    most_categories = [category for category, category_books in categories.items(
+    ) if len(category_books) == max_category_count]
 
     if not most_categories:
         return 'Nenhuma categoria encontrada.'
@@ -75,12 +81,14 @@ def category_with_most_books(library_data):
     else:
         return ', '.join(most_categories)
 
+
 def book_with_longest_title(all_books):
     if not all_books:
         return 'Nenhum livro encontrado.'
 
     max_title_length = max(len(book.get('titulo', '')) for book in all_books)
-    longest_title_books = [book for book in all_books if len(book.get('titulo', '')) == max_title_length]
+    longest_title_books = [book for book in all_books if len(
+        book.get('titulo', '')) == max_title_length]
 
     if not longest_title_books:
         return 'Nenhum livro encontrado.'
@@ -89,24 +97,28 @@ def book_with_longest_title(all_books):
     else:
         return ', '.join(book.get('titulo', 'Título Desconhecido') for book in longest_title_books)
 
+
 def author_with_shortest_name(all_books):
     if not all_books:
         return 'Nenhum autor encontrado.'
 
-    authors = set(book.get('autor', 'Autor Desconhecido') for book in all_books)
+    authors = set(book.get('autor', 'Autor Desconhecido')
+                  for book in all_books)
     shortest_author_name = min(authors, key=len)
 
     return shortest_author_name
 
-def get_responses(library:Dict) -> list:
+
+def get_responses(library: Dict) -> list:
     responses = []
     all_books = get_books(library)
     responses.append(library['informacao']['nome'])
     responses.append(len(library['informacao']['telefones']))
-    responses.append(len(get_books(library,'autoajuda')))
+    responses.append(len(get_books(library, 'autoajuda')))
     responses.append(len(all_books))
-    responses.append(sum(book['copias'] for book in all_books)) 
-    responses.append(sum(book['emprestados'] for book in get_books(library,'romance')))
+    responses.append(sum(book['copias'] for book in all_books))
+    responses.append(sum(book['emprestados']
+                     for book in get_books(library, 'romance')))
     responses.append(author_with_most_borrowed_books(all_books))
     responses.append(book_with_most_copies(all_books))
     responses.append(author_and_books_list(all_books))
@@ -116,14 +128,17 @@ def get_responses(library:Dict) -> list:
 
     return responses
 
+
 def show_results(results):
-    for question,response in results:
+    for question, response in results:
         print(f'{question}:\n\t{response}')
+
 
 def analyze_library():
     library = json.loads(LIBRARY)
     responses = get_responses(library)
-    show_results(zip(QUESTIONS,responses))
+    show_results(zip(QUESTIONS, responses))
+
 
 if __name__ == '__main__':
     analyze_library()

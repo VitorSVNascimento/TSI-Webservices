@@ -1,0 +1,1 @@
+URL_NOTICIES = 'https://www.ifsudestemg.edu.br/editais/editais-de-barbacena?b_start:int='
