@@ -2,12 +2,22 @@ import requests
 from models.notice import Notice
 from constants import *
 import bs4
+import os
+from concurrent.futures import ThreadPoolExecutor
+from DAO import noticeDAO as dao
 noticies = []
 
 def find_all_noticies():
     links = get_links_list()
 
     [noticies.append(Notice(link.text.strip(),link.get('href'))) for link in links]
+
+    with ThreadPoolExecutor(max_workers=os.cpu_count()) as executor:
+        executor.map(get_notice_informations, noticies)
+
+    dao.create_table()
+    [dao.insert(notice) for notice in noticies]
+
 
 def get_links_list():
     JUMP = 30
@@ -24,8 +34,10 @@ def get_links_list():
         page+=JUMP
     return links
 
-def get_
-
+def get_notice_informations(notice:Notice) -> None:
+        resp = requests.get(notice.url)
+        soup = bs4.BeautifulSoup(resp.content, 'html.parser')
+        notice.update_notice(soup)
 
 if __name__ == '__main__':
     find_all_noticies()
