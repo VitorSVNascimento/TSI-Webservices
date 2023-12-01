@@ -10,6 +10,17 @@ class Notice:
         self.modality = ''
         self.pdf_link = ''
 
+    def __init__(self, id, title, url, year, number, situation, modality, pdf_link):
+        self.id = id
+        self.title = title
+        self.url = url
+        self.year = year
+        self.number = number
+        self.situation = situation
+        self.modality = modality
+        self.pdf_link = pdf_link
+
+
 
     def to_json(self,) -> dict:
         return{
